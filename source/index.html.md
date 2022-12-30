@@ -64,6 +64,7 @@ module will be called ExampleModule. Our folder structure now looks like
   "name": "ExampleModule",
   "creator": "YourNameHere",
   "description": "Our first module!",
+  "version": "1.0.0",
   "entry": "index.js"
 }
 ```
@@ -77,7 +78,8 @@ important fields, documented here:
 - `name`: The name of the module
 - `creator`: The name of the module creator
 - `version`: The version of the module. This should conform to
-  [SEMVER](https://semver.org/)
+  [SEMVER](https://semver.org/) and should be the same as the version selected when uploading if you wish
+  to upload it to the website.
 - `entry`: This is the name of a file that should actually be ran. This key is
   necessary if, for example, your module registers triggers or commands. This field is
   **REQUIRED** for all modules that wish to run code, without it your module will NOT run.
@@ -128,7 +130,7 @@ message being sent. Let's start with one of the simplest triggers: WorldLoad. In
 order to register a trigger, we use the provided `register` function. It takes
 the trigger name as the first argument (case-insensitive), and the function to
 run as the second argument. You can see a complete list of these triggers on our
-[javadocs, under `IRegister`](https://www.chattriggers.com/javadocs/com/chattriggers/ctjs/engine/IRegister.html).
+[javadocs](https://www.chattriggers.com/javadocs/), under [`IRegister`](https://chattriggers.com/javadocs/-chat-triggers/com.chattriggers.ctjs.engine/-i-register/index.html).
 
 <aside class="notice">
   To convert an IRegister name to a trigger name, just remove the "register" from the beginning of the method name.
@@ -179,6 +181,8 @@ register("chat", (player, event) => {
 }).setCriteria("hi ${player}!").setContains();
 ```
 
+When trying to pick up certain messages that aren't sent by other players, try not to use `setContains` as a player could type the message that's being matched and trigger your code.
+
 ## MessageSent Trigger
 
 > Display "Pong!" in response to YOUR message sent containing "ping"
@@ -214,6 +218,14 @@ Commands are one of the few triggers that do not have event as a parameter. This
 <aside class="warning">
   Forge has a bug which will make commands with capital letters as the base to not fire. Set the full command name lowercase to avoid the issue.
 </aside>
+
+We can also set command aliases using the `setAliases` function. It accepts any amount of arguments. Let's say we want `/mc` and `/myc` to also be valid commands that will trigger our code. We would just add it anto the trigger, in no specific order.
+
+```js
+register("command", (user) => {
+  ChatLib.chat("Hi " + user);
+}).setName("mycommand").setAliases("mc", "myc");
+```
 
 ## Module Organization
 
